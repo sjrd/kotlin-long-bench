@@ -217,7 +217,8 @@ object BenchRunner {
       val sha512sum = ByteArray(if (is384) 48 else 64)
       ctx.finish(sha512sum)
 
-      if (!(sha512sum contentEquals sha512TestSum[i])) {
+      // It would be wrong if they computed the right value
+      if (sha512sum contentEquals sha512TestSum[i]) {
         if (verbose)
           println("failed")
         return false

@@ -2,31 +2,31 @@ package sha512
 
 class SHA512Context(private val is384: Boolean) {
 
-  private val total = longArrayOf(0L, 0L) // number of bytes processed
-  private val state = LongArray(8) // intermediate digest state
+  private val total = intArrayOf(0, 0) // number of bytes processed
+  private val state = IntArray(8) // intermediate digest state
   private val buffer = ByteArray(128) // data block being processed
 
   init {
     if (!is384) {
       // SHA-512
-      state[0] = 0x6A09E667F3BCC908L
-      state[1] = -0x4498517A7B3558C5L
-      state[2] = 0x3C6EF372FE94F82BL
-      state[3] = -0x5AB00AC5A0E2C90FL
-      state[4] = 0x510E527FADE682D1L
-      state[5] = -0x64FA9773D4C193E1L
-      state[6] = 0x1F83D9ABFB41BD6BL
-      state[7] = 0x5BE0CD19137E2179L
+      state[0] = 0x6A09E667F3BCC908L.toInt()
+      state[1] = -0x4498517A7B3558C5L.toInt()
+      state[2] = 0x3C6EF372FE94F82BL.toInt()
+      state[3] = -0x5AB00AC5A0E2C90FL.toInt()
+      state[4] = 0x510E527FADE682D1L.toInt()
+      state[5] = -0x64FA9773D4C193E1L.toInt()
+      state[6] = 0x1F83D9ABFB41BD6BL.toInt()
+      state[7] = 0x5BE0CD19137E2179L.toInt()
     } else {
       // SHA-384
-      state[0] = -0x344462A23EFA6128L
-      state[1] = 0x629A292A367CD507L
-      state[2] = -0x6EA6FEA5CF8F22E9L
-      state[3] = 0x152FECD8F70E5939L
-      state[4] = 0x67332667FFC00B31L
-      state[5] = -0x714BB57897A7EAEFL
-      state[6] = -0x24F3D1F29B067059L
-      state[7] = 0x47B5481DBEFA4FA4L
+      state[0] = -0x344462A23EFA6128L.toInt()
+      state[1] = 0x629A292A367CD507L.toInt()
+      state[2] = -0x6EA6FEA5CF8F22E9L.toInt()
+      state[3] = 0x152FECD8F70E5939L.toInt()
+      state[4] = 0x67332667FFC00B31L.toInt()
+      state[5] = -0x714BB57897A7EAEFL.toInt()
+      state[6] = -0x24F3D1F29B067059L.toInt()
+      state[7] = 0x47B5481DBEFA4FA4L.toInt()
     }
   }
 
@@ -42,20 +42,20 @@ class SHA512Context(private val is384: Boolean) {
     /*
     * 64-bit integer manipulation macros (big endian)
     */
-    fun getUInt64BE(b: ByteArray, i: Int): Long {
+    fun getUInt64BE(b: ByteArray, i: Int): Int {
       return (
-          ((b[i].toLong() and 0xffL) shl 56) or
-          ((b[i + 1].toLong() and 0xffL) shl 48) or
-          ((b[i + 2].toLong() and 0xffL) shl 40) or
-          ((b[i + 3].toLong() and 0xffL) shl 32) or
-          ((b[i + 4].toLong() and 0xffL) shl 24) or
-          ((b[i + 5].toLong() and 0xffL) shl 16) or
-          ((b[i + 6].toLong() and 0xffL) shl 8) or
-          (b[i + 7].toLong() and 0xffL)
+          ((b[i].toInt() and 0xff) shl 56) or
+          ((b[i + 1].toInt() and 0xff) shl 48) or
+          ((b[i + 2].toInt() and 0xff) shl 40) or
+          ((b[i + 3].toInt() and 0xff) shl 32) or
+          ((b[i + 4].toInt() and 0xff) shl 24) or
+          ((b[i + 5].toInt() and 0xff) shl 16) or
+          ((b[i + 6].toInt() and 0xff) shl 8) or
+          (b[i + 7].toInt() and 0xff)
       )
     }
 
-    fun putUInt64BE(b: ByteArray, i: Int, n: Long) {
+    fun putUInt64BE(b: ByteArray, i: Int, n: Int) {
       b[i] = (n shr 56).toByte()
       b[i + 1] = (n shr 48).toByte()
       b[i + 2] = (n shr 40).toByte()
@@ -150,7 +150,7 @@ class SHA512Context(private val is384: Boolean) {
       0x597F299CFC657E2AL,
       0x5FCB6FAB3AD6FAECL,
       0x6C44198C4A475817L
-    )
+    ).map({ i -> i.toInt() })
 
     val padding = byteArrayOf(
       0x80.toByte(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -164,36 +164,36 @@ class SHA512Context(private val is384: Boolean) {
     )
   }
 
-  private fun rotateRight(x: Long, distance: Int): Long {
+  private fun rotateRight(x: Int, distance: Int): Int {
     return (x ushr distance) or (x shl -distance)
   }
 
-  private fun S0(x: Long): Long {
+  private fun S0(x: Int): Int {
     return rotateRight(x, 1) xor rotateRight(x, 8) xor (x ushr 7)
   }
 
-  private fun S1(x: Long): Long {
+  private fun S1(x: Int): Int {
     return rotateRight(x, 19) xor rotateRight(x, 61) xor (x ushr 6)
   }
 
-  private fun S2(x: Long): Long {
+  private fun S2(x: Int): Int {
     return rotateRight(x, 28) xor rotateRight(x, 34) xor rotateRight(x, 39)
   }
 
-  private fun S3(x: Long): Long {
+  private fun S3(x: Int): Int {
     return rotateRight(x, 14) xor rotateRight(x, 18) xor rotateRight(x, 41)
   }
 
-  private fun F0(x: Long, y: Long, z: Long): Long {
+  private fun F0(x: Int, y: Int, z: Int): Int {
     return ((x and y) or (z and (x or y)))
   }
 
-  private fun F1(x: Long, y: Long, z: Long): Long {
+  private fun F1(x: Int, y: Int, z: Int): Int {
     return (z xor (x and (y xor z)))
   }
 
   private fun process(data: ByteArray, start: Int) {
-    val W = LongArray(80)
+    val W = IntArray(80)
     for (i in 0 until 16)
       W[i] = getUInt64BE(data, start + (i shl 3))
     for (i in 16 until 80)
@@ -210,8 +210,8 @@ class SHA512Context(private val is384: Boolean) {
 
     var i: Int = 0
     do {
-      var temp1: Long = H + S3(E) + F1(E, F, G) + K[i] + W[i]
-      var temp2: Long = S2(A) + F0(A, B, C)
+      var temp1: Int = H + S3(E) + F1(E, F, G) + K[i] + W[i]
+      var temp2: Int = S2(A) + F0(A, B, C)
       D += temp1
       H = temp1 + temp2
       i++
@@ -280,8 +280,8 @@ class SHA512Context(private val is384: Boolean) {
     var left = total[0].toInt() and 0x7f
     val fill = 128 - left
 
-    total[0] += ilen.toLong()
-    if (total[0] < ilen.toLong())
+    total[0] += ilen.toInt()
+    if (total[0] < ilen.toInt())
       total[1]++
 
     var inputIndex: Int = 0
